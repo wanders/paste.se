@@ -20,7 +20,6 @@ escape = lambda a: a.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;"
 USER = "www-data"
 GROUP = "www-data"
 BASEDIR="/paste/"
-BASEHOST="paste.int.prnw.net"
 
 class PasteServer:
 
@@ -70,7 +69,7 @@ class PasteServer:
         cherrypy.response.simple_cookie['username'] = user
         cherrypy.response.simple_cookie['username']['path'] = '/'
         cherrypy.response.simple_cookie['username']['max-age'] = 3600 * 24 * 30 
-        raise cherrypy.HTTPRedirect("http://%s.%s/" % (key, BASEHOST))
+        raise cherrypy.HTTPRedirect("http://%s.%s/" % (key, cherrypy.config.get("paste.basehost")))
         
     add.exposed = True
 
