@@ -35,7 +35,7 @@ class PasteServer:
             data = data.replace("%%USERNAME%%", uname)
             return data
         else:
-            db=sqlite.connect(BASEDIR+"database/paste.db")
+            db=sqlite.connect(cherrypy.config.get("paste.database"))
             c=db.cursor()
             c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=%s", (str(key),))
             if not c.rowcount:
@@ -61,7 +61,7 @@ class PasteServer:
             return "Bad lang!"
         paste = paste.replace("\r","")
         key=md5.md5(user+desc+paste).hexdigest()[:16]
-        db=sqlite.connect(BASEDIR+"database/paste.db")
+        db=sqlite.connect(cherrypy.config.get("paste.database"))
         c=db.cursor()
         c.execute("REPLACE into paste (hash, user, description, lang, paste) VALUES (%s, %s, %s, %s, %s)", (key, user, desc, lang, paste))
         db.commit()
