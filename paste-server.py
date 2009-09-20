@@ -6,6 +6,7 @@ import pwd
 import grp
 import sqlite
 import md5
+import kid
 
 from pygments import highlight
 import pygments.lexers
@@ -16,7 +17,6 @@ OK_LANGS.sort()
 
 DEFAULT_LANG="text"
 
-escape = lambda a: a.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
 USER = "www-data"
 GROUP = "www-data"
 BASEDIR="/paste/"
@@ -26,14 +26,11 @@ class PasteServer:
     def index(self):
         key = cherrypy.request.headers['Host'].split(".")[0]
         if key in ('new', 'paste'):
-            lang_opts = "\n".join([('<option value="%s"%s>%s</option>' % (l,l==DEFAULT_LANG and " selected" or "",l)) for l in OK_LANGS])
-            data = file(BASEDIR+"static/main.html").read()
             uname = ""
             if cherrypy.request.simple_cookie.has_key('username'):
                 uname = cherrypy.request.simple_cookie['username'].value
-            data = data.replace("%%LANGOPTS%%", lang_opts)
-            data = data.replace("%%USERNAME%%", uname)
-            return data
+            tmpl = kid.Template(BASEDIR+"templates/main.html", username=uname, default_lang=DEFAULT_LANG, langs=OK_LANGS)
+            return tmpl.serialize(output='xhtml')
         else:
             db=sqlite.connect(cherrypy.config.get("paste.database"))
             c=db.cursor()
@@ -45,15 +42,9 @@ class PasteServer:
             lexer = pygments.lexers.get_lexer_by_name(lang)
             formatter = HtmlFormatter(linenos=True, cssclass="source")
             paste = highlight(paste, lexer, formatter)
-            user = escape(user)
-            desc = escape(desc)
             css = formatter.get_style_defs(arg='') 
-            data = file(BASEDIR+"static/paste.html").read()
-            data = data.replace("%%PASTE%%", paste)
-            data = data.replace("%%USER%%", user)
-            data = data.replace("%%DESC%%", desc)
-            data = data.replace("%%CSS%%", css)
-            return data
+            tmpl = kid.Template(BASEDIR+"templates/paste.html", paste=paste,user=user, desc=desc, css=css)
+            return tmpl.serialize(output='xhtml')
     index.exposed = True
 
     def add(self, user, desc, lang, paste):
