@@ -35,9 +35,10 @@ class PasteServer:
             db=sqlite3.connect(cherrypy.config.get("paste.database"))
             c=db.cursor()
             c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=?", (str(key),))
-            if not c.rowcount:
-                return "Unknown Paste %s" % (key)
-            user, desc, lang, paste = c.fetchone()
+            r = c.fetchone()
+            if r is None:
+                return "Unknown paste"
+            user, desc, lang, paste = r
             db.close()
             lexer = pygments.lexers.get_lexer_by_name(lang)
             formatter = HtmlFormatter(linenos=True, cssclass="source")
