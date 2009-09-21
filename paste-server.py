@@ -4,7 +4,7 @@ import cherrypy
 import os
 import pwd
 import grp
-import sqlite
+import sqlite3
 import md5
 import kid
 
@@ -32,9 +32,9 @@ class PasteServer:
             tmpl = kid.Template(BASEDIR+"templates/main.html", username=uname, default_lang=DEFAULT_LANG, langs=OK_LANGS)
             return tmpl.serialize(output='xhtml')
         else:
-            db=sqlite.connect(cherrypy.config.get("paste.database"))
+            db=sqlite3.connect(cherrypy.config.get("paste.database"))
             c=db.cursor()
-            c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=%s", (str(key),))
+            c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=?", (str(key),))
             if not c.rowcount:
                 return "Unknown Paste %s" % (key)
             user, desc, lang, paste = c.fetchone()
@@ -52,9 +52,9 @@ class PasteServer:
             return "Bad lang!"
         paste = paste.replace("\r","")
         key=md5.md5(user+desc+paste).hexdigest()[:16]
-        db=sqlite.connect(cherrypy.config.get("paste.database"))
+        db=sqlite3.connect(cherrypy.config.get("paste.database"))
         c=db.cursor()
-        c.execute("REPLACE into paste (hash, user, description, lang, paste) VALUES (%s, %s, %s, %s, %s)", (key, user, desc, lang, paste))
+        c.execute("REPLACE into paste (hash, user, description, lang, paste) VALUES (?, ?, ?, ?, ?)", (key, user, desc, lang, paste))
         db.commit()
         db.close()
         cherrypy.response.simple_cookie['username'] = user
