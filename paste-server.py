@@ -48,6 +48,21 @@ class PasteServer:
             return tmpl.serialize(output='xhtml')
     index.exposed = True
 
+    def raw(self):
+        key = cherrypy.request.headers['Host'].split(".")[0]
+        cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
+        db=sqlite3.connect(cherrypy.config.get("paste.database"))
+        c=db.cursor()
+        c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=?", (str(key),))
+        r = c.fetchone()
+        if r is None:
+            return "Unknown paste"
+        user, desc, lang, paste = r
+        db.close()
+        return paste
+    raw.exposed = True
+
+
     def add(self, user, desc, lang, paste):
         if not lang in OK_LANGS:
             return "Bad lang!"
