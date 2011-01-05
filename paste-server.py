@@ -23,6 +23,13 @@ BASEDIR="/paste/"
 
 class PasteServer:
 
+    def robots_txt(self):
+        cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
+        return """User-agent: *
+Disallow:
+"""
+    robots_txt.exposed = True
+
     def index(self):
         key = cherrypy.request.headers['Host'].split(".")[0]
         if key in ('new', 'paste'):
