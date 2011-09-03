@@ -17,6 +17,40 @@ OK_LANGS.sort()
 
 DEFAULT_LANG="text"
 
+CHARS={0x00: u"&lt;NUL&gt;",
+       0x01: u"&lt;SOH&gt;",
+       0x02: u"&lt;STX&gt;",
+       0x03: u"&lt;ETX&gt;",
+       0x04: u"&lt;EOT&gt;",
+       0x05: u"&lt;ENQ&gt;",
+       0x06: u"&lt;ACK&gt;",
+       0x07: u"&lt;BEL&gt;",
+       0x08: u"&lt;BS&gt;",
+       0x0B: u"&lt;VT&gt;",
+       0x0C: u"&lt;FF&gt;",
+       0x0E: u"&lt;SO&gt;",
+       0x0F: u"&lt;SI&gt;",
+       0x10: u"&lt;DLE&gt;",
+       0x11: u"&lt;DC1&gt;",
+       0x12: u"&lt;DC2&gt;",
+       0x13: u"&lt;DC3&gt;",
+       0x14: u"&lt;DC4&gt;",
+       0x15: u"&lt;NAK&gt;",
+       0x16: u"&lt;SYN&gt;",
+       0x17: u"&lt;ETB&gt;",
+       0x18: u"&lt;CAN&gt;",
+       0x19: u"&lt;EM&gt;",
+       0x1A: u"&lt;SUB&gt;",
+       0x1B: u"&lt;ESC&gt;",
+       0x1C: u"&lt;FS&gt;",
+       0x1D: u"&lt;GS&gt;",
+       0x1E: u"&lt;RS&gt;",
+       0x1F: u"&lt;US&gt;",
+}
+
+def stripctlchars(s):
+    return s.translate(CHARS)
+
 class PasteServer:
 
     def robots_txt(self):
@@ -45,7 +79,7 @@ Disallow:
             db.close()
             lexer = pygments.lexers.get_lexer_by_name(lang)
             formatter = HtmlFormatter(linenos=True, cssclass="source")
-            paste = highlight(paste, lexer, formatter)
+            paste = stripctlchars(highlight(paste, lexer, formatter))
             css = formatter.get_style_defs(arg='') 
             tmpl = kid.Template("templates/paste.html", paste=paste,user=user, desc=desc, css=css)
             return tmpl.serialize(output='xhtml')
