@@ -17,10 +17,6 @@ OK_LANGS.sort()
 
 DEFAULT_LANG="text"
 
-USER = "www-data"
-GROUP = "www-data"
-BASEDIR="/paste/"
-
 class PasteServer:
 
     def robots_txt(self):
@@ -34,12 +30,12 @@ Disallow:
         key = cherrypy.request.headers['Host'].split(".")[0]
         if key in ('new', 'paste'):
             uname = ""
-            if cherrypy.request.simple_cookie.has_key('username'):
-                uname = cherrypy.request.simple_cookie['username'].value
-            tmpl = kid.Template(BASEDIR+"templates/main.html", username=uname, default_lang=DEFAULT_LANG, langs=OK_LANGS)
+            if cherrypy.request.cookie.has_key('username'):
+                uname = cherrypy.request.cookie['username'].value
+            tmpl = kid.Template("templates/main.html", username=uname, default_lang=DEFAULT_LANG, langs=OK_LANGS)
             return tmpl.serialize(output='xhtml')
         else:
-            db=sqlite3.connect(cherrypy.config.get("paste.database"))
+            db=sqlite3.connect(cherrypy.request.app.config['paste']['dbfile'])
             c=db.cursor()
             c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=?", (str(key),))
             r = c.fetchone()
@@ -51,14 +47,14 @@ Disallow:
             formatter = HtmlFormatter(linenos=True, cssclass="source")
             paste = highlight(paste, lexer, formatter)
             css = formatter.get_style_defs(arg='') 
-            tmpl = kid.Template(BASEDIR+"templates/paste.html", paste=paste,user=user, desc=desc, css=css)
+            tmpl = kid.Template("templates/paste.html", paste=paste,user=user, desc=desc, css=css)
             return tmpl.serialize(output='xhtml')
     index.exposed = True
 
     def raw(self):
         key = cherrypy.request.headers['Host'].split(".")[0]
         cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-        db=sqlite3.connect(cherrypy.config.get("paste.database"))
+        db=sqlite3.connect(cherrypy.request.app.config['paste']['dbfile'])
         c=db.cursor()
         c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=?", (str(key),))
         r = c.fetchone()
@@ -75,26 +71,19 @@ Disallow:
             return "Bad lang!"
         paste = paste.replace("\r","")
         key=md5.md5(user+desc+paste).hexdigest()[:16]
-        db=sqlite3.connect(cherrypy.config.get("paste.database"))
+        db=sqlite3.connect(cherrypy.request.app.config['paste']['dbfile'])
         c=db.cursor()
         c.execute("REPLACE into paste (hash, user, description, lang, paste) VALUES (?, ?, ?, ?, ?)", (key, user, desc, lang, paste))
         db.commit()
         db.close()
-        cherrypy.response.simple_cookie['username'] = user
-        cherrypy.response.simple_cookie['username']['path'] = '/'
-        cherrypy.response.simple_cookie['username']['max-age'] = 3600 * 24 * 30 
-        raise cherrypy.HTTPRedirect("http://%s.%s/" % (key, cherrypy.config.get("paste.basehost")))
+        cherrypy.response.cookie['username'] = user
+        cherrypy.response.cookie['username']['path'] = '/'
+        cherrypy.response.cookie['username']['max-age'] = 3600 * 24 * 30 
+        raise cherrypy.HTTPRedirect("http://%s.%s/" % (key, cherrypy.request.app.config['paste']['basehost']))
         
     add.exposed = True
 
-cherrypy.root = PasteServer()
+cherrypy.tree.mount(PasteServer(), config="paste.conf")
 
 if __name__ == '__main__':
-    if os.getuid() == 0:
-        os.setgid(grp.getgrnam(GROUP)[2])
-        os.setegid(grp.getgrnam(GROUP)[2])
-        os.setuid(pwd.getpwnam(USER)[2])
-        os.seteuid(pwd.getpwnam(USER)[2])
-    cherrypy.config.update(file=BASEDIR+"paste.conf")
-    cherrypy.server.start()
-
+    print "Use: cherryd -c development.conf -i paste"
