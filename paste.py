@@ -59,12 +59,12 @@ class NoSuchPaste(cherrypy.NotFound):
 
 class PasteServer:
 
+    @cherrypy.expose
     def robots_txt(self):
         cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
         return """User-agent: *
 Disallow:
 """
-    robots_txt.exposed = True
 
     def _get_paste(self, fields, key=None):
         if key is None:
@@ -80,6 +80,7 @@ Disallow:
             db.close()
         return r
 
+    @cherrypy.expose
     def index(self):
         try:
             user, desc, lang, paste = self._get_paste(["user","description","lang","paste"])
@@ -98,14 +99,13 @@ Disallow:
         css = formatter.get_style_defs(arg='')
         tmpl = kid.Template("templates/paste.html", paste=paste,user=user, desc=desc, css=css)
         return tmpl.serialize(output='xhtml')
-    index.exposed = True
 
+    @cherrypy.expose
     def raw(self):
         paste, = self._get_paste(["paste"])
         return paste
-    raw.exposed = True
 
-
+    @cherrypy.expose
     def add(self, user, desc, lang, paste):
         if not lang in OK_LANGS:
             return "Bad lang!"
@@ -120,8 +120,6 @@ Disallow:
         cherrypy.response.cookie['username']['path'] = '/'
         cherrypy.response.cookie['username']['max-age'] = 3600 * 24 * 30 
         raise cherrypy.HTTPRedirect("http://%s.%s/" % (key, cherrypy.request.app.config['paste']['basehost']))
-        
-    add.exposed = True
 
 cherrypy.tree.mount(PasteServer(), config="paste.conf")
 
