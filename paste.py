@@ -51,6 +51,12 @@ CHARS={0x00: u"&lt;NUL&gt;",
 def stripctlchars(s):
     return s.translate(CHARS)
 
+class NoSuchPaste(cherrypy.NotFound):
+    def __init__(self, key):
+        cherrypy.NotFound.__init__(self, key)
+        self.key = key
+        self._message = "Paste %s not found" % key
+
 class PasteServer:
 
     def robots_txt(self):
@@ -60,42 +66,42 @@ Disallow:
 """
     robots_txt.exposed = True
 
-    def index(self):
-        key = cherrypy.request.headers['Host'].split(".")[0]
-        if key in ('new', 'paste'):
-            uname = ""
-            if cherrypy.request.cookie.has_key('username'):
-                uname = cherrypy.request.cookie['username'].value
-            tmpl = kid.Template("templates/main.html", username=uname, default_lang=DEFAULT_LANG, langs=OK_LANGS)
-            return tmpl.serialize(output='xhtml')
-        else:
-            db=sqlite3.connect(cherrypy.request.app.config['paste']['dbfile'])
-            c=db.cursor()
-            c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=?", (str(key),))
+    def _get_paste(self, fields, key=None):
+        if key is None:
+            key = cherrypy.request.headers['Host'].split(".")[0]
+        db=sqlite3.connect(cherrypy.request.app.config['paste']['dbfile'])
+        c=db.cursor()
+        try:
+            c.execute("SELECT "+(",".join(fields))+" FROM paste WHERE hash=?", (str(key),))
             r = c.fetchone()
             if r is None:
-                return "Unknown paste"
-            user, desc, lang, paste = r
+                raise NoSuchPaste(key)
+        finally:
             db.close()
-            lexer = pygments.lexers.get_lexer_by_name(lang)
-            formatter = HtmlFormatter(linenos=True, cssclass="source")
-            paste = stripctlchars(highlight(paste, lexer, formatter))
-            css = formatter.get_style_defs(arg='') 
-            tmpl = kid.Template("templates/paste.html", paste=paste,user=user, desc=desc, css=css)
-            return tmpl.serialize(output='xhtml')
+        return r
+
+    def index(self):
+        try:
+            user, desc, lang, paste = self._get_paste(["user","description","lang","paste"])
+        except NoSuchPaste as e:
+            if e.key in ('new', 'paste'):
+                uname = ""
+                if cherrypy.request.cookie.has_key('username'):
+                    uname = cherrypy.request.cookie['username'].value
+                tmpl = kid.Template("templates/main.html", username=uname, default_lang=DEFAULT_LANG, langs=OK_LANGS)
+                return tmpl.serialize(output='xhtml')
+            raise
+
+        lexer = pygments.lexers.get_lexer_by_name(lang)
+        formatter = HtmlFormatter(linenos=True, cssclass="source")
+        paste = stripctlchars(highlight(paste, lexer, formatter))
+        css = formatter.get_style_defs(arg='')
+        tmpl = kid.Template("templates/paste.html", paste=paste,user=user, desc=desc, css=css)
+        return tmpl.serialize(output='xhtml')
     index.exposed = True
 
     def raw(self):
-        key = cherrypy.request.headers['Host'].split(".")[0]
-        cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
-        db=sqlite3.connect(cherrypy.request.app.config['paste']['dbfile'])
-        c=db.cursor()
-        c.execute("SELECT user, description, lang, paste FROM paste WHERE hash=?", (str(key),))
-        r = c.fetchone()
-        if r is None:
-            return "Unknown paste"
-        user, desc, lang, paste = r
-        db.close()
+        paste, = self._get_paste(["paste"])
         return paste
     raw.exposed = True
 
