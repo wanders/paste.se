@@ -110,7 +110,7 @@ Disallow:
         if not lang in OK_LANGS:
             return "Bad lang!"
         paste = paste.replace("\r","")
-        key=md5.md5(user+desc+paste).hexdigest()[:16]
+        key=md5.md5(user.encode("utf-8")+desc.encode("utf-8")+paste.encode("utf-8")).hexdigest()[:16]
         db=sqlite3.connect(cherrypy.request.app.config['paste']['dbfile'])
         c=db.cursor()
         c.execute("REPLACE into paste (hash, user, description, lang, paste) VALUES (?, ?, ?, ?, ?)", (key, user, desc, lang, paste))
