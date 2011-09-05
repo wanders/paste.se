@@ -121,6 +121,17 @@ Disallow:
         return paste
 
     @cherrypy.expose
+    def png(self):
+        key = cherrypy.request.headers['Host'].split(".")[0]
+        paste,lang = self._get_paste(["paste","lang"])
+        if not self._canupload(paste):
+            return "Paste too big for png..."
+        cherrypy.response.headers['Content-Type'] = 'image/png'
+        lexer = pygments.lexers.get_lexer_by_name(lang)
+        formatter = ImageFormatter()
+        return highlight(paste, lexer, formatter)
+
+    @cherrypy.expose
     def add(self, user, desc, lang, paste):
         if not lang in OK_LANGS:
             return "Bad lang!"
