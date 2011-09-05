@@ -10,7 +10,16 @@ import kid
 
 from pygments import highlight
 import pygments.lexers
-from pygments.formatters import HtmlFormatter
+from pygments.formatters import HtmlFormatter, ImageFormatter
+
+import gdata.service
+import gdata.photos
+import gdata.photos.service
+
+from StringIO import StringIO
+
+SCOPE="http://picasaweb.google.com/data/"
+
 
 OK_LANGS=[x[2][0] for x in pygments.lexers.LEXERS.values()]
 OK_LANGS.sort()
@@ -93,11 +102,17 @@ Disallow:
                 return tmpl.serialize(output='xhtml')
             raise
 
+        canupload=self._canupload(paste)
         lexer = pygments.lexers.get_lexer_by_name(lang)
         formatter = HtmlFormatter(linenos=True, cssclass="source")
         paste = stripctlchars(highlight(paste, lexer, formatter))
         css = formatter.get_style_defs(arg='')
-        tmpl = kid.Template("templates/paste.html", paste=paste,user=user, desc=desc, css=css)
+        tmpl = kid.Template("templates/paste.html",
+                            paste=paste,
+                            user=user,
+                            canupload=canupload,
+                            desc=desc,
+                            css=css)
         return tmpl.serialize(output='xhtml')
 
     @cherrypy.expose
@@ -120,6 +135,65 @@ Disallow:
         cherrypy.response.cookie['username']['path'] = '/'
         cherrypy.response.cookie['username']['max-age'] = 3600 * 24 * 30 
         raise cherrypy.HTTPRedirect("http://%s.%s/" % (key, cherrypy.request.app.config['paste']['basehost']))
+
+
+    @cherrypy.expose
+    def googleupload(self):
+        key = cherrypy.request.headers['Host'].split(".")[0]
+        next = "http://auth.%s/authsub/%s" % (cherrypy.request.app.config['paste']['basehost'], key)
+        aurl = gdata.service.GenerateAuthSubRequestUrl(next, SCOPE, secure=False, session=True)
+        raise cherrypy.HTTPRedirect(aurl)
+
+    def _canupload(self, paste):
+        splitted = paste.split("\n")
+        if len(splitted) > 24 or any(len(x) > 80 for x in splitted):
+            return False
+        return True
+
+
+    @cherrypy.expose
+    def authsub(self, *args, **kwargs):
+        key = args[0]
+        user, desc, lang, paste = self._get_paste(["user","description","lang","paste"], key=key)
+
+        if not self._canupload(paste):
+            return "Paste too big for upload..."
+
+        pasteurl="http://%s.%s/" % (key, cherrypy.request.app.config['paste']['basehost'])
+
+        lexer = pygments.lexers.get_lexer_by_name(lang)
+        formatter = ImageFormatter(linenos=True, cssclass="source")
+        img = highlight(paste, lexer, formatter)
+
+        sutoken = kwargs['token']
+
+        srv = gdata.photos.service.PhotosService()
+        srv.SetAuthSubToken(sutoken)
+        srv.UpgradeToSessionToken()
+
+        albums = srv.GetUserFeed().entry
+        for a in albums:
+            extelements = dict([(e.tag, e.text) for e in a.extension_elements])
+            if extelements.get('albumType') == 'CameraSync':
+                failed=False
+                try:
+                    srv.InsertPhotoSimple(a, "pasteseupload", "%s\n(pasted by %s on %s)" % (desc, user, pasteurl), StringIO(img))
+                except:
+                    failed=True
+                tmpl = kid.Template("templates/picasaupload-done.html",
+                                    albumname = a.title.text,
+                                    failed=failed,
+                                    pasteurl=pasteurl)
+                return tmpl.serialize(output='xhtml')
+
+
+        tmpl = kid.Template("templates/picasaupload-done.html",
+                            albumname=None, failed=True,
+                            pasteurl="http://%s.%s/" % (args[0], cherrypy.request.app.config['paste']['basehost']))
+        return tmpl.serialize(output='xhtml')
+
+
+
 
 cherrypy.tree.mount(PasteServer(), config="paste.conf")
 
