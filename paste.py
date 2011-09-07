@@ -117,6 +117,7 @@ Disallow:
 
     @cherrypy.expose
     def raw(self):
+        cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
         paste, = self._get_paste(["paste"])
         return paste
 
