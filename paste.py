@@ -123,7 +123,6 @@ Disallow:
 
     @cherrypy.expose
     def png(self):
-        key = cherrypy.request.headers['Host'].split(".")[0]
         paste,lang = self._get_paste(["paste","lang"])
         if not self._canupload(paste):
             return "Paste too big for png..."
