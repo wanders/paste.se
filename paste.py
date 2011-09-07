@@ -99,7 +99,7 @@ Disallow:
                 if cherrypy.request.cookie.has_key('username'):
                     uname = cherrypy.request.cookie['username'].value
                 tmpl = kid.Template("templates/main.html", username=uname, default_lang=DEFAULT_LANG, langs=OK_LANGS)
-                return tmpl.serialize(output='xhtml')
+                return tmpl.serialize(output='xhtml-strict')
             raise
 
         canupload=self._canupload(paste)
@@ -113,7 +113,7 @@ Disallow:
                             canupload=canupload,
                             desc=desc,
                             css=css)
-        return tmpl.serialize(output='xhtml')
+        return tmpl.serialize(output='xhtml-strict')
 
     @cherrypy.expose
     def raw(self):
@@ -195,13 +195,13 @@ Disallow:
                                     albumname = a.title.text,
                                     failed=failed,
                                     pasteurl=pasteurl)
-                return tmpl.serialize(output='xhtml')
+                return tmpl.serialize(output='xhtml-strict')
 
 
         tmpl = kid.Template("templates/picasaupload-done.html",
                             albumname=None, failed=True,
                             pasteurl="http://%s.%s/" % (args[0], cherrypy.request.app.config['paste']['basehost']))
-        return tmpl.serialize(output='xhtml')
+        return tmpl.serialize(output='xhtml-strict')
 
 
 

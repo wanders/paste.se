@@ -1,106 +1,105 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://purl.org/kid/ns#" lang="en" xml:lang="en">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:py="http://purl.org/kid/ns#">
 <head>
-	<title>Paste.se</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<style type="text/css">
-		body {
-			font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
-			font-size: small;
-			background-color: white;
-		}
+  <title>Paste.se</title>
+  <style type="text/css">
+    body {
+        font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
+        padding: 0px;
+        margin: 0px;
+        font-size: 10pt;
+        background-color: white;
+    }
 
-		input {
-			font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
-			font-size: x-small;
-		}
+    input {
+        font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
+        border: 1px solid #333;
+        width: 100%;
+    }
 
-		h1 {
-			background-color: #456;
-			padding: 0.2em;
-			border: black 1px solid;
-			border-right: black 1em solid;
-			color: white;
-			margin-bottom: 10px;
-			text-align: right;
-		}
+    select {
+         margin-left: 0;
+    }
 
-		table {
-			border: black 1px solid;
-			margin-bottom: 1em;
-		}
+    textarea, select {
+        font-family: monospace;
+        font-size: 10pt;
+        border: 1px solid #888;
+    }
+    div.headerbox {
+        text-align: right;
+        color: white;
+        background: #333;
+        padding: 0px;
+        padding-right: 1em;
+        margin-bottom: 1em;
+    }
+    p.title {
+        font-size: 20pt;
+    }
+    p {
+        margin: 0px;
+        padding: 0px;
+    }
 
-		table caption {
-			background-color: blue;
-			border: black 1px solid;
-			text-align: left;
-			font-size: medium;
-			background-color: #456;
-			color: white;
-			border-left: black 0.6em solid;
-			padding-left: 0.2em;
-		}
+    caption {
+        border-bottom: #888 1px solid;
+        margin-right: 0.2em;
+        text-align: right;
+    }
 
-		.copyright {
-			text-align: right;
-			display: block;
-			font-size: x-small;
-			font-weight: bold;
-			border-top: #666 1px solid;
-			margin-top: 1em;
-			padding: 0.3em;
-		}
-
-		.titleCaption {
-			font-weight: bold;
-			display: block;
-			margin: 0px;
-			text-align: right;
-			font-size: x-small;
-			padding-bottom: 1em;
-		}
-	</style>
+    .copyright {
+        text-align: right;
+        display: block;
+        font-size: x-small;
+        font-weight: bold;
+        border-top: #888 1px solid;
+        margin-top: 1em;
+        padding: 0.3em;
+    }
+  </style>
 </head>
 <body>
 
-<h1>paste.se</h1>
+  <div class="headerbox">
+    <p class="title">paste.se</p>
+  </div>
 
-<form action="add" method="post">
-	<table>
-		<caption>Details</caption>
-		<tr>
-			<td>Username:</td>
-			<td colspan="2"><input type="text" name="user" value="${username}" /></td>
-		</tr>
-		
-		<tr>
-			<td>Description:</td>
-			<td colspan="2"><input type="text" name="desc" /></td>
-		</tr>
-		<tr>
-			<td>Language:</td>
-			<td>
-				<select name="lang">
-					<option py:for="l in langs" value="${l}" py:attrs="{'selected': 'selected'} if l==default_lang else {}">${l}</option>
-				</select>
-			</td>
-			<td>
-				<input type="submit" value="Paste" />
-			</td>
-		</tr>
-	</table>
+  <form action="add" method="post">
+    <table>
+      <caption>Details</caption>
+      <tr>
+        <td>Username:</td>
+        <td colspan="2"><input type="text" name="user" value="${username}" /></td>
+      </tr>
+      <tr>
+        <td>Description:</td>
+        <td colspan="2"><input type="text" name="desc"></input></td>
+      </tr>
+      <tr>
+        <td>Language:</td>
+        <td>
+          <select name="lang">
+            <option py:for="l in langs" value="${l}" py:attrs="{'selected': 'selected'} if l==default_lang else {}">${l}</option>
+          </select>
+        </td>
+        <td>
+          <input type="submit" value="Paste" />
+        </td>
+      </tr>
+    </table>
 
-	<table>
-		<caption>Code/Output</caption>
-		<tr>
-			<td>
-				<textarea name="paste" cols="80" rows="20"></textarea>
-			</td>
-		</tr>
-	</table>
+    <table>
+      <caption>Code/Output</caption>
+      <tr>
+        <td>
+          <textarea name="paste" cols="80" rows="24"></textarea>
+        </td>
+      </tr>
+    </table>
 
-	<p class="copyright">(c) 2005-2011 Anders Waldenborg et al.</p>
-</form>
+    <p class="copyright">(c) 2005-2011 Anders Waldenborg et al.</p>
+  </form>
 </body>
 </html>

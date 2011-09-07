@@ -4,28 +4,48 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <style type="text/css">
-	body {
-		font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
-		font-size: small;
-		background-color: white;		background: #fff;
-	}
+    body {
+        font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
+        padding: 0px;
+        margin: 0px;
+        font-size: 10pt;
+        background-color: white;
+    }
 
-        h1 {
-                background-color: #456;
-                padding: 0.2em;
-                border: black 1px solid;
-                border-right: black 1em solid;
-                color: white;
-                margin-bottom: 10px;
-                text-align: right;
-        }
-	td { vertical-align: text-top; padding: 0.2em; }
-	td.linenos { text-align: right; color: #456; }
-
+    div.headerbox {
+        text-align: right;
+        color: white;
+        background: #333;
+        padding: 0px;
+        padding-right: 1em;
+        margin-bottom: 1em;
+    }
+    p.title {
+        font-size: 20pt;
+    }
+    p {
+        margin: 0px;
+        padding: 0px;
+    }
+    h2 {
+        font-size: 15pt;
+    }
+    a {
+        color: #333;
+        text-decoration: none;
+    }
+    a:hover {
+        color: #000;
+        text-decoration: underline;
+    }
 </style>
 <title>Upload status</title>
 </head>
 <body>
+
+  <div class="headerbox">
+    <p class="title">Instant upload</p>
+  </div>
 
   <div py:if="failed">
     <p py:if="albumname is None">

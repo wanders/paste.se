@@ -1,44 +1,86 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en" xmlns:py="http://purl.org/kid/ns#">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:py="http://purl.org/kid/ns#">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<script language="javascript">
+function toggleoptions() {
+    var x = document.getElementById("options");
+    if (x.style.display == "block") {
+        x.style.display="none";
+    } else {
+        x.style.display="block";
+    }
+    return false;
+}
+</script>
 <style type="text/css">
-	body {
-		font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
-		font-size: small;
-	}
-	h1 {
-		background-color: #456;
-		padding: 0.2em;
-		border: black 1px solid;
-		border-right: black 1em solid;
-		color: white;
-		margin-bottom: 0px;
-		text-align: right;
-	}
-	div.links {
-		margin-right: 2em;
-		margin-top: 0px;
-		margin-bottom: 0px;
-		padding-top: 0px;
-		padding-bottom: 0px;
-		text-align: right;
-		color: black;
-	}
-	a:visited {
-		color: black;
-	}
+    body {
+        font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
+        padding: 0px;
+        margin: 0px;
+        font-size: 10pt;
+        background-color: white;
+    }
+    div.headerbox {
+        text-align: right;
+        color: white;
+        background: #333;
+        padding-right: 1em;
+    }
+    div.optionsbox {
+        position: absolute;
+        right: 0;
+        background: #333;
+        margin: px;
+        padding: 0.2em;
+        padding-right: 1em;
+        display: none;
+    }
+    ul {
+        margin: 0;
+        padding: 4px;
+    }
+    li {
+        list-style: none;
+        text-align: left;
+    }
+    p.title {
+        font-size: 20pt;
+    }
+    p {
+        margin: 0px;
+        padding: 0px;
+    }
+    a {
+        color: #888;
+        text-decoration: none;
+    }
+    a:hover {
+        color: #fff;
+    }
 
- td { vertical-align: text-top; padding: 0.2em; }
- td.linenos { text-align: right; color: #456; }
+    td { vertical-align: text-top;}
+    td.linenos { text-align: right; color: #888; }
 ${css}
 </style>
 <title>${desc}</title>
 </head>
 <body>
-<h1><i>${desc}</i> pasted by <i>${user}</i></h1>
-<div class="links"><a href="/raw">plain</a> <a href="/googleupload" py:if="canupload">G</a></div>
-${XML(paste)}
+  <div class="headerbox">
+    <p class="title">${desc or "Unnamed paste"}</p>
+    <p>
+      <span class="pastedby">pasted by</span>
+      <span class="who">${user or "Unknown"}</span>
+      <a href="/options" onclick="return toggleoptions();">[options]</a>
+      <div class="optionsbox" id="options">
+    <ul>
+      <li><a href="/raw">Show as plain text</a></li>
+      <li py:if="canupload"><a href="/googleupload">Instant upload (google)</a></li>
+      <li><a href="http://new.paste.se/">Create new paste</a></li>
+    </ul>
+      </div>
+    </p>
+  </div>
+  ${XML(paste)}
 </body>
 </html>
