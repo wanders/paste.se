@@ -12,6 +12,21 @@ function toggleoptions() {
     }
     return false;
 }
+
+function togglelinenumbers() {
+    var tds = document.getElementsByTagName("td");
+    for (var i = 0; i+1 != tds.length; i++) {
+        var els = tds[i].getElementsByClassName("linenodiv");
+        if (els.length == 1) {
+            if (els[0].style.visibility=="hidden") {
+                els[0].style.visibility="visible";
+            } else {
+                els[0].style.visibility="hidden";
+            }
+        }
+    }
+}
+
 </script>
 <style type="text/css">
     body {
@@ -76,6 +91,7 @@ ${css}
     <ul>
       <li><a href="/raw">Show as plain text</a></li>
       <li py:if="canupload"><a href="/googleupload">Instant upload (google)</a></li>
+      <li><a href="javascript:togglelinenumbers();">Toggle linenumbers</a></li>
       <li><a href="http://new.paste.se/">Create new paste</a></li>
     </ul>
       </div>
