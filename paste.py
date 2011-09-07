@@ -22,7 +22,7 @@ SCOPE="http://picasaweb.google.com/data/"
 
 
 OK_LANGS=[x[2][0] for x in pygments.lexers.LEXERS.values()]
-OK_LANGS.sort()
+OK_LANGS.sort(key=lambda x: x.lower())
 
 DEFAULT_LANG="text"
 
