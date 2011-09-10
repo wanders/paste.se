@@ -10,7 +10,7 @@ import kid
 
 from pygments import highlight
 import pygments.lexers
-from pygments.formatters import HtmlFormatter, ImageFormatter
+from pygments.formatters import HtmlFormatter, ImageFormatter, TerminalFormatter
 
 import gdata.service
 import gdata.photos
@@ -120,6 +120,14 @@ Disallow:
         cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
         paste, = self._get_paste(["paste"])
         return paste
+
+    @cherrypy.expose
+    def term(self):
+        paste,lang = self._get_paste(["paste","lang"])
+        cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
+        lexer = pygments.lexers.get_lexer_by_name(lang)
+        formatter = TerminalFormatter()
+        return highlight(paste, lexer, formatter)
 
     @cherrypy.expose
     def png(self):
