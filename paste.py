@@ -72,7 +72,7 @@ class PasteServer:
     def robots_txt(self):
         cherrypy.response.headers['Content-Type'] = 'text/plain; charset=UTF-8'
         return """User-agent: *
-Disallow:
+Disallow: /googleupload
 """
 
     def _get_paste(self, fields, key=None):
