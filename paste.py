@@ -193,7 +193,7 @@ Disallow: /googleupload
         albums = srv.GetUserFeed().entry
         for a in albums:
             extelements = dict([(e.tag, e.text) for e in a.extension_elements])
-            if extelements.get('albumType') == 'CameraSync':
+            if extelements.get('albumType') == 'InstantUpload':
                 failed=False
                 try:
                     srv.InsertPhotoSimple(a, "pasteseupload", "%s\n(pasted by %s on %s)" % (desc, user, pasteurl), StringIO(img))
