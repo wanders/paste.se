@@ -3,4 +3,5 @@ CREATE table paste (
     user,
     description,
     lang,
-    paste);
+    paste,
+    may_index);

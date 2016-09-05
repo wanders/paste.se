@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:py="http://purl.org/kid/ns#">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <title>paste.se</title>
   <style type="text/css">
@@ -8,11 +8,11 @@
         font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
         padding: 0px;
         margin: 0px;
-        font-size: 10pt;
+        font-size: small;
         background-color: white;
     }
 
-    input {
+    input.textfield {
         font-family: Verdana,Arial,'Bitstream Vera Sans',Helvetica,Sans-serif;
         border: 1px solid #333;
         width: 100%;
@@ -24,7 +24,7 @@
 
     textarea, select {
         font-family: monospace;
-        font-size: 10pt;
+        font-size: small;
         border: 1px solid #888;
     }
     div.headerbox {
@@ -36,7 +36,7 @@
         margin-bottom: 1em;
     }
     p.title {
-        font-size: 20pt;
+        font-size: x-large;
     }
     p {
         margin: 0px;
@@ -66,26 +66,32 @@
     <p class="title">paste.se</p>
   </div>
 
-  <form action="add" method="post">
+  <form action="add" method="POST" accept-charset="UTF-8">
     <table>
       <caption>Details</caption>
       <tr>
         <td>Username:</td>
-        <td colspan="2"><input type="text" name="user" value="${username}" /></td>
+        <td colspan="2"><input class="textfield" type="text" name="user" value="{{username}}" /></td>
       </tr>
       <tr>
         <td>Description:</td>
-        <td colspan="2"><input type="text" name="desc"></input></td>
+        <td colspan="2"><input class="textfield" type="text" name="desc"></input></td>
       </tr>
+	  <tr>
+		<td>Allow index:</td>
+		<td colspan="2"><input type="checkbox" name="index" value="yes" checked="true" /><span style="font-size: xx-small;">(tell searchengines they can index the paste)</span></td>
+	  </tr>
       <tr>
         <td>Language:</td>
         <td>
           <select name="lang">
-            <option py:for="l in langs" value="${l}" py:attrs="{'selected': 'selected'} if l==default_lang else {}">${l}</option>
+	    {% for l in langs %}
+            <option value="{{l}}" {% if l == default_lang %}selected="selected"{% end %}>{{l}}</option>
+	    {% end %}
           </select>
         </td>
         <td>
-          <input type="submit" value="Paste" />
+          <input type="submit" value="Paste" style="width: 100%;" />
         </td>
       </tr>
     </table>
@@ -99,7 +105,7 @@
       </tr>
     </table>
 
-    <p class="copyright">(c) 2005-2011 Anders Waldenborg et al.</p>
+    <p class="copyright">(c) 2005-2015 Anders Waldenborg et al.</p>
   </form>
 </body>
 </html>

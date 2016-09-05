@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" xmlns:py="http://purl.org/kid/ns#">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <script language="javascript">
 function toggleoptions() {
@@ -76,27 +76,27 @@ function togglelinenumbers() {
 
     td { vertical-align: text-top;}
     td.linenos { text-align: right; color: #888; }
-${css}
+{{css}}
 </style>
-<title>paste.se - ${desc or "Unnamed paste"} (pasted by ${user or "unknown"})</title>
+<title>paste.se - {{desc or "Unnamed paste"}} (pasted by {{user or "unknown"}})</title>
 </head>
 <body>
   <div class="headerbox">
-    <p class="title">${desc or "Unnamed paste"}</p>
+    <p class="title">{{desc or "Unnamed paste"}}</p>
     <p>
       <span class="pastedby">pasted by</span>
-      <span class="who">${user or "Unknown"}</span>
+      <span class="who">{{user or "Unknown"}}</span>
       <a href="/options" onclick="return toggleoptions();">[options]</a>
       <div class="optionsbox" id="options">
     <ul>
       <li><a href="/raw">Show as plain text</a></li>
-      <li py:if="canupload"><a href="/googleupload">Instant upload (google)</a></li>
       <li><a href="javascript:togglelinenumbers();">Toggle linenumbers</a></li>
       <li><a href="http://new.paste.se/">Create new paste</a></li>
     </ul>
       </div>
     </p>
   </div>
-  ${XML(paste)}
+
+  {% raw paste %}
 </body>
 </html>
