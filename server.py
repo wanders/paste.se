@@ -238,9 +238,25 @@ routes = [
     (r"/add", AddHandler),
 ]
 
+
+def create_db_if_not_exists():
+    db = sqlite3.connect(pasteconfig.DB_FILE)
+    c = db.cursor()
+    c.execute("""CREATE TABLE IF NOT EXISTS paste (
+    hash PRIMARY KEY,
+    user,
+    description,
+    lang,
+    paste,
+    may_index);
+""")
+    db.commit()
+
+
 application = tornado.web.Application(routes,
                                       **pasteconfig.TORNADOARGS)
 
 if __name__ == "__main__":
+    create_db_if_not_exists()
     application.listen(8800)
     tornado.ioloop.IOLoop.instance().start()
