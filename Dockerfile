@@ -20,4 +20,4 @@ WORKDIR /paste
 
 EXPOSE 8800
 
-CMD python /paste/server.py
+CMD /paste/server.py

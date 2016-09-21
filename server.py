@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Author:: Anders Waldenborg <anders@0x63.nu>
 # Copyright:: Copyright (c) 2005-2016, Anders Waldenborg
