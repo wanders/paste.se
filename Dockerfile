@@ -1,6 +1,4 @@
-FROM ubuntu:16.04
-
-RUN apt-get update -y && apt-get install python python-pip sqlite3 -y
+FROM python:2.7-alpine
 
 RUN pip install tornado pygments
 
