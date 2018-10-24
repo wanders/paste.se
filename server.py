@@ -121,6 +121,7 @@ class MainHandler(PasteBaseHandler):
             self.render("templates/main.html",
                         username=uname,
                         default_lang=pasteconfig.DEFAULT_LANG,
+                        configurable_index=pasteconfig.CONFIGURABLE_INDEX,
                         langs=OK_LANGS)
             return
 

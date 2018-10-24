@@ -77,10 +77,12 @@
         <td>Description:</td>
         <td colspan="2"><input class="textfield" type="text" name="desc"></input></td>
       </tr>
+      {% if configurable_index %}
 	  <tr>
 		<td>Allow index:</td>
 		<td colspan="2"><input type="checkbox" name="index" value="yes" checked="true" /><span style="font-size: xx-small;">(tell searchengines they can index the paste)</span></td>
 	  </tr>
+      {% end %}
       <tr>
         <td>Language:</td>
         <td>
