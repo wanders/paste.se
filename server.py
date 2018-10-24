@@ -144,7 +144,7 @@ class MainHandler(PasteBaseHandler):
         paste = stripctlchars(highlight(paste, lexer, formatter))
         css = formatter.get_style_defs(arg='')
 
-        self.render("templates/paste.html", css=css, user=user, desc=desc, paste=paste)
+        self.render("templates/paste.html", css=css, user=user, desc=desc, paste=paste, basedomain=pasteconfig.BASE_DOMAIN)
 
 
 class TermHandler(PasteBaseHandler):
