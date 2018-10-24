@@ -231,7 +231,7 @@ class AddHandler(tornado.web.RequestHandler):
         else:
             base_host = self.request.host
 
-        self.redirect("http://{}.{}/".format(key, base_host))
+        self.redirect("{}://{}.{}/".format(pasteconfig.REDIRECT_SCHEME, key, base_host))
 
 routes = [
     (r"/robots.txt", RobotsTxtHandler),
