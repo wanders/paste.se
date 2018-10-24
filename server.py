@@ -132,7 +132,10 @@ class MainHandler(PasteBaseHandler):
         except KeyError:
             self.clear()
             self.set_status(404)
-            self.finish("<html><body>Not found</body></html>")
+            self.render("templates/404.html",
+                        key=self.request.host.split(".")[0],
+                        host=self.request.host,
+                        base=pasteconfig.BASE_DOMAIN)
             return
 
         lexer = pygments.lexers.get_lexer_by_name(lang)
