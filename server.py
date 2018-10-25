@@ -117,6 +117,7 @@ class RobotsTxtHandler(PasteBaseHandler):
 class MainHandler(PasteBaseHandler):
     def get(self):
         if (self.request.host.split(":")[0] == pasteconfig.BASE_DOMAIN or
+            self.request.host.split(":")[0] in pasteconfig.ALT_DOMAINS or
             self.request.host.split(".")[0] == "new"):
             try:
                 uname = tornado.escape.url_unescape(self.get_cookie("username", ""))
