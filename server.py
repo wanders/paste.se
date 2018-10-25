@@ -28,6 +28,7 @@
 # authorization.
 
 import tornado.web
+import tornado.escape
 import sqlite3
 import md5
 
@@ -117,7 +118,10 @@ class MainHandler(PasteBaseHandler):
     def get(self):
         if (self.request.host.split(":")[0] == pasteconfig.BASE_DOMAIN or
             self.request.host.split(".")[0] == "new"):
-            uname = self.get_cookie("username", "")
+            try:
+                uname = tornado.escape.url_unescape(self.get_cookie("username", ""))
+            except Exception:
+                uname = ""
             self.render("templates/main.html",
                         username=uname,
                         default_lang=pasteconfig.DEFAULT_LANG,
@@ -221,7 +225,7 @@ class AddHandler(tornado.web.RequestHandler):
         db.commit()
         db.close()
 
-        self.set_cookie("username", user,
+        self.set_cookie("username", tornado.escape.url_escape(user),
                         domain=pasteconfig.BASE_DOMAIN,
                         path='/',
                         expires_days=30)
